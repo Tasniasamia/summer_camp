@@ -8,14 +8,16 @@ export const postPackage = async (req) => {
     const authHeader = req.headers.get("authorization");
     const token = authHeader.split(" ")[1];
     if (!token) {
-        return { success: false, status: 401, msg: "Unauthorized access" };
-      }
-   const payload = verifyToken(token);
+      return { success: false, status: 401, msg: "Unauthorized access" };
+    }
+    const payload = verifyToken(token);
     if (payload?.role === "admin") {
       const data = await req.json();
-      const findPackage=await prisma.package.findFirst({where:{name:data?.name}});
-      if(findPackage){
-        return {success:false,status:400,msg:"Package already created"}
+      const findPackage = await prisma.package.findFirst({
+        where: { name: data?.name },
+      });
+      if (findPackage) {
+        return { success: false, status: 400, msg: "Package already created" };
       }
       const totalPackage = await prisma.package.count();
       if (totalPackage < 3) {
@@ -58,6 +60,61 @@ export const getPackage = async (req) => {
     } else {
       const packageAll = await prisma.package.findMany({});
       return { status: 200, success: true, data: packageAll };
+    }
+  } catch (e) {
+    return { status: 500, success: false, msg: e?.message };
+  }
+};
+
+export const getPackageByUser = async (req) => {
+  try {
+    const authHeader = req.headers.get("authorization");
+    const token = authHeader.split(" ")[1];
+    if (!token) {
+      return { success: false, msg: "Unauthrized Access", status: 401 };
+    }
+    const { id, role, email } = verifyToken(token);
+    if (role === "student") {
+      const data = await prisma.purchasePackage.findFirst({
+        where: { userId: id, status: "paid" },
+      });
+      return { status: 200, data: data, success: true };
+    } else if (role === "admin") {
+      const { searchParams } = new URL(req.url);
+      const limit = parseInt(searchParams.get("limit"));
+      const page = parseInt(searchParams.get("page"));
+      if(limit || page){
+        const [docs, totalDocs] = await Promise.all([
+        prisma.purchasePackage.findMany({
+          skip: (page - 1) * limit,
+          take: limit,
+          orderBy: { createdAt: "desc" },
+        }),
+        prisma.purchasePackage.count(),
+      ]);
+      const totalPages = Math.ceil(totalDocs / limit);
+
+      return {
+        status: 200,
+        data: {
+          docs,
+          limit: limit,
+          page: page,
+          totalPages: totalPages,
+          hasPrevPage: page > 1 ? true : false,
+          hasNextPage: page < totalPages ? true : false,
+          prevPage: page > 1 ? page - 1 : null,
+          nextPage: page < totalPages ? page + 1 : null,
+        },
+        success: true,
+      };
+    }
+    else{
+      const data = await prisma.purchasePackage.findMany();
+      return {status:200,success:true,data:data}
+    }
+    } else {
+      return { status: 400, msg: "No package Found", success: false };
     }
   } catch (e) {
     return { status: 500, success: false, msg: e?.message };
@@ -149,53 +206,68 @@ export const deletePackage = async (req) => {
   }
 };
 
+export const buyPacakge = async (req) => {
+  try {
+    const { userId, resourceId, resourceType, payment } = await req.json();
+    const user = await prisma.user.findUnique({ where: { id: userId } });
 
-export const buyPacakge=async(req)=>{
-  try{
-      const {userId,resourceId,resourceType,payment}=await req.json();
-      const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return { success: false, msg: "User not found", status: 404 };
+    }
 
-      if (!user) {
-        return { success: false, msg: "User not found", status: 404 };
-      }
-  
-      if (user.role !== "student") {
-        return { success: false, msg: "Only students can buy package", status: 400 };
-      }
-  
-      // 2. Find package
-      const data = await prisma.package.findUnique({
-        where: { id: parseInt(resourceId) },
+    if (user.role !== "student") {
+      return {
+        success: false,
+        msg: "Only students can buy package",
+        status: 400,
+      };
+    }
+
+    // 2. Find package
+    const data = await prisma.package.findUnique({
+      where: { id: parseInt(resourceId) },
+    });
+
+    if (!data) {
+      return { success: false, msg: "Package not found", status: 404 };
+    }
+
+    const soldPackage = await prisma.purchasePackage.findFirst({
+      where: {
+        userId: userId,
+        packageId: resourceId,
+        status: "paid",
+      },
+    });
+
+    if (soldPackage) {
+      return {
+        error: "You have already bought this package",
+        success: false,
+        status: 400,
+      };
+    }
+
+    // 4. Prepare transaction
+    const transaction = `tran_${Date.now()}`;
+    if (payment === "sslcommerze") {
+      const result = await ssLcommerzeController({
+        user,
+        data,
+        resourceType,
+        transaction,
       });
-  
-      if (!data) {
-        return { success: false, msg: "Package not found", status: 404 };
-      }
-
-      const soldPackage = await prisma.purchasePackage.findFirst({
-        where: {
-          userId: userId,
-          packageId: resourceId,
-          status: "paid",
-        },
+      return result;
+    } else if (payment === "stripe") {
+      const result = await stripeController({
+        user,
+        data,
+        resourceType,
+        transaction,
       });
-  
-      if (soldPackage) {
-        return { error: "You have already bought this package", success: false, status: 400 };
-      }
-  
-      // 4. Prepare transaction
-      const transaction = `tran_${Date.now()}`;
-      if(payment==="sslcommerze"){
-        const result = await ssLcommerzeController({ user, data,resourceType, transaction });
-        return result;
-      }
-      else  if(payment==="stripe"){
-        const result = await stripeController({ user, data,resourceType, transaction });
-        return result;
-      }
-  }
-  catch (e) {
+      return result;
+    }
+  } catch (e) {
     return { success: false, status: 500, msg: e?.message };
   }
-}
+};
