@@ -112,7 +112,7 @@ export const replyContact=async(req)=>{
         }
         const {reply,id,isReply}=await req.json();
         if(isReply){
-            const addReply=await prisma.contact.update({where:parseInt(id),data:{reply:reply,isReply:true}})
+            const addReply=await prisma.contact.update({where:{id:parseInt(id)},data:{reply:reply,isReply:true}})
             if(addReply){
                 return {status:200,msg:"post reply successfully",success:true}
             }
