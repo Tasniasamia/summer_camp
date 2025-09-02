@@ -28,6 +28,7 @@ model User {
   classInstructor Class[]       @relation("InstructorToClass") // multiple classes
   enroll          enrollClass[]
   createdAt       DateTime      @default(now())
+  package purchasePackage?
 }
 
 model Otp {
@@ -91,7 +92,7 @@ model enrollClass {
   transactionId String?       @unique
   createdAt     DateTime      @default(now())
   sessionkey    String?
-  type          paymentMethod  @default(sslcommerze) 
+  payment          paymentMethod  @default(sslcommerze) 
 }
 
 model Package {
@@ -102,7 +103,23 @@ model Package {
   features  Json?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  purchases     purchasePackage[] 
 }
+
+model purchasePackage {
+  id            Int           @id @default(autoincrement())
+  name          String?
+  packageId     Int
+  package       Package       @relation(fields: [packageId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId        Int           @unique 
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  status        paymentStatus @default(pending)
+  transactionId String?       @unique
+  createdAt     DateTime      @default(now())
+  sessionkey    String?
+  payment          paymentMethod @default(sslcommerze)
+}
+
 
 model faq {
   id        Int      @id @default(autoincrement())

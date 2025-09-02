@@ -3,42 +3,75 @@ import prisma from "@/lib/db";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-export const stripeController = async ({ findUser, classData, transaction }) => {
-  
+export const stripeController = async ({
+  user,
+  data,
+  resourceType,
+  transaction,
+}) => {
   try {
-    await prisma.enrollClass.create({
-      data: {
-        name: findUser.name,
-        classId: classData.id,
-        userId: findUser.id,
-        status: "pending",
-        transactionId: transaction,
-        type: "stripe",
-      },
-    });
-
+    if (resourceType === "course") {
+      await prisma.enrollClass.create({
+        data: {
+          name: user.name,
+          classId: data.id,
+          userId: user.id,
+          status: "pending",
+          transactionId: transaction,
+          payment: "stripe",
+        },
+      });
+    } else {
+      const {id}=user;
+      const findUser=await prisma.purchasePackage.findUnique({where:{userId:id}});
+      if(findUser){
+        await prisma.purchasePackage.update({
+          where:{userId:id},
+          data: {
+            name: user?.name,
+            packageId: data?.id,
+            userId: user?.id,
+            status: "pending",
+            transactionId: transaction,
+            payment: "sslcommerze",
+          },
+        });
+      }
+      else{
+        await prisma.purchasePackage.create({
+          data: {
+            name: user?.name,
+            packageId: data?.id,
+            userId: user?.id,
+            status: "pending",
+            transactionId: transaction,
+            payment: "sslcommerze",
+          },
+        });
+      }
+    }
     // 2. Stripe Checkout Session create
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
+      payment_method_types: ["card", "crypto"],
       line_items: [
         {
           price_data: {
-            currency: "bdt",
+            currency: "usd",
             product_data: {
-              name: classData.name,
+              name: data.name,
             },
-            unit_amount: classData.price * 100,
+            unit_amount: data.price * 100,
           },
           quantity: 1,
         },
       ],
       mode: "payment",
-      success_url: `${process.env.BASE_URL}/api/payment/stripe/success?transaction=${transaction}`,
-      cancel_url: `${process.env.BASE_URL}/api/payment/stripe/cancel?transaction=${transaction}`,
+      success_url: `${process.env.BASE_URL}/api/payment/stripe/success?transaction=${transaction}&resourceType=${resourceType}`,
+      cancel_url: `${process.env.BASE_URL}/api/payment/stripe/cancel?transaction=${transaction}&resourceType=${resourceType}`,
       metadata: {
         transactionId: transaction,
-        userId: findUser.id,
-        classId: classData.id,
+        userId: user.id,
+        classId: data.id,
       },
     });
 

@@ -1,5 +1,7 @@
 import prisma from "@/lib/db";
 import { verifyToken } from "@/lib/helpers/jwt";
+import { ssLcommerzeController } from "../payment/ssl_commerze/ssLcommerzeController";
+import { stripeController } from "../payment/stripe/stripeController";
 
 export const postPackage = async (req) => {
   try {
@@ -146,3 +148,54 @@ export const deletePackage = async (req) => {
     return { success: false, status: 500, msg: e?.message };
   }
 };
+
+
+export const buyPacakge=async(req)=>{
+  try{
+      const {userId,resourceId,resourceType,payment}=await req.json();
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+
+      if (!user) {
+        return { success: false, msg: "User not found", status: 404 };
+      }
+  
+      if (user.role !== "student") {
+        return { success: false, msg: "Only students can buy package", status: 400 };
+      }
+  
+      // 2. Find package
+      const data = await prisma.package.findUnique({
+        where: { id: parseInt(resourceId) },
+      });
+  
+      if (!data) {
+        return { success: false, msg: "Package not found", status: 404 };
+      }
+
+      const soldPackage = await prisma.purchasePackage.findFirst({
+        where: {
+          userId: userId,
+          packageId: resourceId,
+          status: "paid",
+        },
+      });
+  
+      if (soldPackage) {
+        return { error: "You have already bought this package", success: false, status: 400 };
+      }
+  
+      // 4. Prepare transaction
+      const transaction = `tran_${Date.now()}`;
+      if(payment==="sslcommerze"){
+        const result = await ssLcommerzeController({ user, data,resourceType, transaction });
+        return result;
+      }
+      else  if(payment==="stripe"){
+        const result = await stripeController({ user, data,resourceType, transaction });
+        return result;
+      }
+  }
+  catch (e) {
+    return { success: false, status: 500, msg: e?.message };
+  }
+}

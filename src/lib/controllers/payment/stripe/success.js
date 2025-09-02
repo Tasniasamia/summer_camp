@@ -4,11 +4,12 @@ export const successStripe = async (req) => {
   try {
     const url = new URL(req.url);
     const transactionId = url.searchParams.get("transaction");
-
+    const resourceType = url.searchParams.get("resourceType");
     if (!transactionId) {
       return { msg: "Transaction ID missing", success: false, status: 400 };
     }
-
+    
+    if(resourceType==="course"){
     // Find enrollment
     const enroll = await prisma.enrollClass.findUnique({
       where: { transactionId },
@@ -20,7 +21,6 @@ export const successStripe = async (req) => {
 
     const classId = enroll.classId;
     const userId = enroll.userId;
-
     // Update class seats
     const findClass = await prisma.class.findUnique({ where: { id: classId } });
     if (findClass) {
@@ -59,13 +59,20 @@ export const successStripe = async (req) => {
         });
       }
     }
-
     // Update enrollment status
     await prisma.enrollClass.update({
       where: {transactionId: transactionId },
       data: { status: "paid" },
     });
-    console.log("coming here");
+  }
+  else{
+    await prisma.purchasePackage.update({
+      where: {transactionId: transactionId },
+      data: { status: "paid" },
+    });
+  }
+
+
     // Redirect URL return
     return `http://localhost:3000/payment/success?tran_id=${transactionId}`;
   } catch (e) {

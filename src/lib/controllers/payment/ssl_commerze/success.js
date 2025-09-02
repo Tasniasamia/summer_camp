@@ -2,6 +2,8 @@ import prisma from "@/lib/db";
 
 export const successSSLcommerze = async (req) => {
   try {
+    const {searchParams}=new URL(req.url);
+    const resourceType=searchParams.get("resourceType");
     const formData = await req.formData();
     const tran_id = formData.get("tran_id");
     const amount = formData.get("amount");
@@ -10,7 +12,7 @@ export const successSSLcommerze = async (req) => {
     if (!tran_id) {
       return { msg: "Transaction ID missing", success: false, status: 400 };
     }
-
+    if(resourceType=="course"){
     // Find enrollClass
     const enroll = await prisma.enrollClass.findUnique({
       where: { transactionId: tran_id },
@@ -65,8 +67,15 @@ export const successSSLcommerze = async (req) => {
       where: { transactionId: tran_id },
       data: { status: "paid" },
     });
-
-    return `http://localhost:3000/payment/success?tran_id=${tran_id}&amount=${amount}&currency=${currency}`;
+  }
+  else{
+    await prisma.purchasePackage.update({
+      where: { transactionId: tran_id },
+      data: { status: "paid" },
+    });
+    
+  }
+  return `http://localhost:3000/payment/success?tran_id=${tran_id}&amount=${amount}&currency=${currency}`;
   } catch (e) {
     return { msg: e?.message, success: false, status: 500 };
   }

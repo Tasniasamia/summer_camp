@@ -6,25 +6,25 @@ import { stripeController } from "../payment/stripe/stripeController";
 export const enrollClass = async (req) => {
   try {
     const body = await req.json();
-    const { classId, userId ,type} = body;
+    const { resourceId,resourceType, userId ,payment} = body;
 
     // 1. Find user
-    const findUser = await prisma.user.findUnique({ where: { id: userId } });
+    const user = await prisma.user.findUnique({ where: { id: userId } });
 
-    if (!findUser) {
+    if (!user) {
       return { success: false, msg: "User not found", status: 404 };
     }
 
-    if (findUser.role !== "student") {
+    if (user.role !== "student") {
       return { success: false, msg: "Only students can enroll", status: 400 };
     }
 
     // 2. Find class
-    const classData = await prisma.class.findUnique({
-      where: { id: parseInt(classId) },
+    const data = await prisma.class.findUnique({
+      where: { id: parseInt(resourceId) },
     });
 
-    if (!classData) {
+    if (!data) {
       return { success: false, msg: "Class not found", status: 404 };
     }
 
@@ -32,7 +32,7 @@ export const enrollClass = async (req) => {
     const enrolledUser = await prisma.enrollClass.findFirst({
       where: {
         userId: userId,
-        classId: classId,
+        classId: resourceId,
         status: "paid",
       },
     });
@@ -43,12 +43,12 @@ export const enrollClass = async (req) => {
 
     // 4. Prepare transaction
     const transaction = `tran_${Date.now()}`;
-    if(type==="sslcommerze"){
-      const result = await ssLcommerzeController({ findUser, classData, transaction });
+    if(payment==="sslcommerze"){
+      const result = await ssLcommerzeController({ user, data,resourceType, transaction });
       return result;
     }
-    else  if(type==="stripe"){
-      const result = await stripeController({ findUser, classData, transaction });
+    else  if(payment==="stripe"){
+      const result = await stripeController({ user, data,resourceType, transaction });
       return result;
     }
     } catch (e) {
