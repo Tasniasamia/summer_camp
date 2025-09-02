@@ -21,21 +21,28 @@ export const stripeController = async ({
           payment: "stripe",
         },
       });
-    } else {
+    } else if (resourceType === "package"){
       const {id}=user;
       const findUser=await prisma.purchasePackage.findUnique({where:{userId:id}});
       if(findUser){
-        await prisma.purchasePackage.update({
-          where:{userId:id},
-          data: {
-            name: user?.name,
-            packageId: data?.id,
-            userId: user?.id,
-            status: "pending",
-            transactionId: transaction,
-            payment: "sslcommerze",
-          },
-        });
+        if(findUser?.packageId===data?.id && findUser?.status === "paid"){
+          return {
+            msg: "You have already bought this package", success: false, status: 400
+          }
+        }else{
+          await prisma.purchasePackage.update({
+            where:{userId:id},
+            data: {
+              name: user?.name,
+              packageId: data?.id,
+              userId: user?.id,
+              status: "pending",
+              transactionId: transaction,
+              payment: "sslcommerze",
+            },
+          });
+        }
+    
       }
       else{
         await prisma.purchasePackage.create({
