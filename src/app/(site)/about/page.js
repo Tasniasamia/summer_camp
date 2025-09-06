@@ -1,5 +1,5 @@
-import Banner from '@/components/common/banner';
-import AboutSection from '@/components/home/about';
+import Banner from '@/components/(site)/common/banner';
+import AboutSection from '@/components/(site)/home/about';
 import React from 'react';
 
 const page = () => {

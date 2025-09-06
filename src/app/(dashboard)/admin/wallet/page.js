@@ -9,7 +9,7 @@ import {
   FaTimesCircle,
 } from "react-icons/fa";
 import { Table, Tag } from "antd";
-import SearchInput from "@/components/common/search";
+import SearchInput from "@/components/(site)/common/search";
 
 const data = [
   {

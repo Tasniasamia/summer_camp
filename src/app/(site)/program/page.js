@@ -1,5 +1,5 @@
-import Banner from '@/components/common/banner';
-import ClassesSection from '@/components/home/classSection';
+import Banner from '@/components/(site)/common/banner';
+import ClassesSection from '@/components/(site)/home/classSection';
 import React from 'react';
 
 const page = () => {

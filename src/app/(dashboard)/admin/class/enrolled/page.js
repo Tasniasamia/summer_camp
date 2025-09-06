@@ -1,6 +1,6 @@
 "use client";
-import CommonTable from '@/components/common/table/table';
-import Title from '@/components/common/title';
+import CommonTable from '@/components/(site)/common/table/table';
+import Title from '@/components/(site)/common/title';
 import React, { useState } from 'react';
 import { Modal, List, Button, Card, Typography } from "antd";
 import { FaUser, FaEnvelope, FaPhone, FaCalendarAlt } from "react-icons/fa";

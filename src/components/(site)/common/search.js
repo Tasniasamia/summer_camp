@@ -1,15 +1,13 @@
 "use client"
 import React, { useState, useEffect, useRef } from "react";
-const SearchInput = ({ onSearch, placeholder = "Search by name...", debounceTime = 500, className = "" }) => {
+const SearchInput = ({setGlobalFilter, onSearch, placeholder = "Search by name...", debounceTime = 500, className = "" }) => {
   const [value, setValue] = useState("");
   const debRef = useRef(null);
 
   // call onSearch with debounce
   useEffect(() => {
     if (!onSearch) return;
-
-    if (debRef.current) clearTimeout(debRef.current);
-
+  if (debRef.current) clearTimeout(debRef.current);
     debRef.current = setTimeout(() => {
       onSearch(value.trim() === "" ? undefined : value.trim());
     }, debounceTime);
@@ -35,7 +33,7 @@ const SearchInput = ({ onSearch, placeholder = "Search by name...", debounceTime
       <input
         type="text"
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => {setValue(e.target.value);setGlobalFilter(e.target.value);}}
         placeholder={placeholder}
         className="px-3 py-2 border rounded-md border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-400 w-56"
       />

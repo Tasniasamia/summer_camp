@@ -1,5 +1,5 @@
 "use client";
-import CommonTable from "@/components/common/table/table";
+import CommonTable from "@/components/(site)/common/table/table";
 import { useRouter } from "next/navigation";
 
 const page = () => {

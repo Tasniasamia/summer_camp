@@ -1,7 +1,9 @@
 "use client";
-import CommonTable from "@/components/common/table/table";
-import Title from "@/components/common/title";
-import { useFetch, useMutationAction } from "@/helpers/utils/hooks";
+import DashboardTable from "@/components/(dashboard)/common/table/table";
+import CommonTable from "@/components/(site)/common/table/table";
+import Title from "@/components/(site)/common/title";
+import { getAllClass } from "@/helpers/utils/api";
+import { useFetch } from "@/helpers/utils/hooks";
 import dayjs from "dayjs";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -12,12 +14,12 @@ const Page = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
-  const deleteClass=useMutationAction('delete',`/class`,'deleteClass');
+  // const deleteClass=useMutationAction('delete',`/class`,'deleteClass');
   const {
     data: getClass,
     isLoading: loadingClasses,
     error: errClasses,
-  } = useFetch("class", "/class", { page, limit, search });
+  } = useFetch("class", getAllClass, { page:page, limit:10, search:search });
 
   const {
     data: users,
@@ -91,22 +93,23 @@ const Page = () => {
           </button>
         }
       />
-
-      <CommonTable
+      <DashboardTable/>
+      {/* <CommonTable
         columns={columns}
         isSearch={true}
-        data={getClass?.data}
+        data={getClass?.data?.data?.docs}
         loading={loadingClasses || loadingUsers}
         onView={(rec) => router.push(`/admin/class/${rec?.id}`)}
         onEdit={(rec) => router.push(`/admin/class/edit/${rec?.id}`)}
         onDelete={async(rec) =>{
-         deleteClass.mutateAsync({id:rec?.id});
+        //  deleteClass.mutateAsync({id:rec?.id});
 
         } }
-        pagination={true}
-        onPageChange={handlePageChange}
+        // pagination={true}
+        // onPageChange={handlePageChange}
         setSearch={setSearch}
-      />
+      /> */}
+      
     </div>
   );
 };

@@ -1,6 +1,6 @@
-import Title from '@/components/common/title';
+import Title from '@/components/(site)/common/title';
 import React from 'react';
-import ClassForm from '../component/form';
+import ClassForm from '../component/(site)/form';
 
 const page = () => {
     return (

@@ -1,4 +1,4 @@
-import Title from "@/components/common/title";
+import Title from "@/components/(site)/common/title";
 import ClassForm from "../../component/form";
 import { use } from "react";  // Next.js 15 style
 

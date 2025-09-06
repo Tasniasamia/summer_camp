@@ -1,5 +1,5 @@
-import Footer from '@/components/layout/footer';
-import Header from '@/components/layout/header';
+import Footer from '@/components/(site)/layout/footer';
+import Header from '@/components/(site)/layout/header';
 import { FirebaseAuthProvider } from '@/helpers/context/authContext';
 import ReactQueryProvider from '@/helpers/context/quries';
 import React from 'react';

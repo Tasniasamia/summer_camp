@@ -14,7 +14,7 @@ import {
 } from "antd";
 import { FaCreditCard, FaWallet, FaTag, FaDollarSign } from "react-icons/fa";
 import Image from "next/image";
-import Banner from "@/components/common/banner";
+import Banner from "@/components/(site)/common/banner";
 
 export default function CheckoutPage({ params }) {
   const [form] = Form.useForm();

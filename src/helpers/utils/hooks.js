@@ -29,8 +29,7 @@ export const useActionAsync = (actionMethod, queryKey = null) => {
       if (queryKey) queryClient.invalidateQueries([queryKey]);
     },
   });
-
-  // Async wrapper for easier await usage
+  
   const mutateAsync = async (payload) => {
     return await mutation.mutateAsync(payload);
   };

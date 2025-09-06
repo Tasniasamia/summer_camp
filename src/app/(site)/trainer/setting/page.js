@@ -10,11 +10,11 @@ import {
   Space,
 } from "antd";
 import { FaUser, FaEnvelope, FaPhone, FaLock, FaCamera, FaStar, FaIdBadge } from "react-icons/fa";
-import ImageInput from "@/components/common/form/image";
+import ImageInput from "@/components/(site)/common/form/image";
 import { useAuth } from "@/helpers/context/authContext";
 import toast from "react-hot-toast";
 import { useFetch, useMutationAction } from "@/helpers/utils/hooks";
-import UserDashboardSkeleton from "@/components/skeleton/dashboardSkeleton";
+import UserDashboardSkeleton from "@/components/(site)/skeleton/dashboardSkeleton";
 import { FaEarthAsia } from "react-icons/fa6";
 const { TextArea } = Input;
 

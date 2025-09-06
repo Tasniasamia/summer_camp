@@ -10,7 +10,7 @@ import {
   Switch,
 } from "antd";
 import JoditEditor from "jodit-react";
-import ImageInput from "@/components/common/form/image";
+import ImageInput from "@/components/(site)/common/form/image";
 import { useFetch, useMutationAction } from "@/helpers/utils/hooks";
 import toast from "react-hot-toast";
 import dayjs from "dayjs";
