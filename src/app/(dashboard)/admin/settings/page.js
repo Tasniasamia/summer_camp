@@ -13,7 +13,7 @@ import { FaUser, FaEnvelope, FaPhone, FaLock, FaCamera } from "react-icons/fa";
 import ImageInput from "@/components/common/form/image";
 import { useAuth } from "@/helpers/context/authContext";
 import toast from "react-hot-toast";
-import { useFetch, useMutationAction } from "@/helpers/utils/queries";
+import { useFetch, useMutationAction } from "@/helpers/utils/hooks";
 import UserDashboardSkeleton from "@/components/skeleton/dashboardSkeleton";
 const { TextArea } = Input;
 

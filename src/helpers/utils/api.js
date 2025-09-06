@@ -1,26 +1,13 @@
-// utils/api.js
-import api from "./axios"; // axios interceptor already configured
+import { get, post, put, del } from "../utils/apiMethods";
 
-// GET
-export const fetchData = async (url, params) => {
-  const { data } = await api.get(url, { params });
-  return data;
-};
+// GET with optional pagination & search params
+export const GetTeamMembers = (params = {}) => get("/teams", params);
 
 // POST
-export const postData = async (url, payload) => {
-  const { data } = await api.post(url, payload);
-  return data;
-};
+export const AddTeamMember = (payload) => post("/teams", payload);
 
 // PUT
-export const updateData = async (url, payload) => {
-  const { data } = await api.put(url, payload);
-  return data;
-};
+export const UpdateTeamMember = (id, payload) => put(`/teams/${id}`, payload);
 
 // DELETE
-export const deleteData = async (url,payload) => {
-  const { data } = await api.delete(url,{data:payload});
-  return data;
-};
+export const DeleteTeamMember = (id) => del(`/teams/${id}`);

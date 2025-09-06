@@ -1,5 +1,5 @@
 "use client";
-import { useFetch } from "@/helpers/utils/queries";
+import { useFetch } from "@/helpers/utils/hooks";
 import dayjs from "dayjs";
 import Image from "next/image";
 import { use } from "react";

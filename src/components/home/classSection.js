@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import ClassCard from "../common/card/classCard";
-import { useFetch } from "@/helpers/utils/queries";
+import { useFetch } from "@/helpers/utils/hooks";
 import CustomPagination from "../common/pagination/pagination";
 import { Empty } from "antd";
 

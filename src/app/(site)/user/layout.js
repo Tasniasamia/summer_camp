@@ -13,7 +13,7 @@ import UserDashboardSkeleton from "@/components/common/skeleton/userDashboardSke
 import Banner from "@/components/common/banner";
 import { useAuth } from "@/helpers/context/authContext";
 import toast from "react-hot-toast";
-import { useFetch } from "@/helpers/utils/queries";
+import { useFetch } from "@/helpers/utils/hooks";
 
 const UserDashboardLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

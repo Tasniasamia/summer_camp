@@ -1,7 +1,7 @@
 "use client";
 import CommonTable from "@/components/common/table/table";
 import { useAuth } from "@/helpers/context/authContext";
-import { useFetch } from "@/helpers/utils/queries";
+import { useFetch } from "@/helpers/utils/hooks";
 import { useState } from "react";
 
 const page = () => {

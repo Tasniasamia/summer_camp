@@ -1,6 +1,6 @@
 "use client";
 import { useAuth } from "@/helpers/context/authContext";
-import { useFetch } from "@/helpers/utils/queries";
+import { useFetch } from "@/helpers/utils/hooks";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
