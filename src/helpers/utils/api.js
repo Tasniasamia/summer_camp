@@ -1,13 +1,6 @@
-import { get, post, put, del } from "../utils/apiMethods";
+import { get } from "./axios";
+//class
+export const getAllClass = (params = {}) => get("/class/site", params);
+//category
+export const getAllCategory=(params={})=>get("/class/category",params);
 
-// GET with optional pagination & search params
-export const GetTeamMembers = (params = {}) => get("/teams", params);
-
-// POST
-export const AddTeamMember = (payload) => post("/teams", payload);
-
-// PUT
-export const UpdateTeamMember = (id, payload) => put(`/teams/${id}`, payload);
-
-// DELETE
-export const DeleteTeamMember = (id) => del(`/teams/${id}`);

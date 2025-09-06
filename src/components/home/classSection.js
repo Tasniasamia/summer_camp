@@ -2,141 +2,38 @@
 import { useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import ClassCard from "../common/card/classCard";
-import { useFetch } from "@/helpers/utils/hooks";
 import CustomPagination from "../common/pagination/pagination";
 import { Empty } from "antd";
+import { useFetch } from "@/helpers/utils/hooks";
+import { getAllCategory, getAllClass } from "@/helpers/utils/api";
+import Pagination from "../common/pagination/pagination";
 
 export default function ClassesSection() {
-  const { data, isLoading, error } = useFetch("class", "/getClasses");
   const [currentPage, setCurrentPage] = useState(1);
-  console.log("classdata", data);
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page); // শুধু state update হবে
-  };
+  // const handlePageChange = (page) => {
+  //   setCurrentPage(page); // শুধু state update হবে
+  // };
 
-  const classes = [
-    {
-      id: 1,
-      title: "Swimming & Water Sports",
-      category: "water",
-      instructor: "Sarah Johnson",
-      image: "/swimming-class.png",
-      duration: "2 hours",
-      capacity: 12,
-      enrolled: 8,
-      rating: 4.9,
-      price: 45,
-      level: "All Levels",
-      description:
-        "Learn swimming techniques and enjoy water sports in our pristine lake with certified lifeguards.",
-      schedule: "Mon, Wed, Fri - 10:00 AM",
-      location: "Pine Lake",
-    },
-    {
-      id: 2,
-      title: "Skateboarding Basics",
-      category: "sports",
-      instructor: "Mike Rodriguez",
-      image: "/skateboarding-class.png",
-      duration: "1.5 hours",
-      capacity: 10,
-      enrolled: 6,
-      rating: 4.8,
-      price: 35,
-      level: "Beginner",
-      description:
-        "Master the fundamentals of skateboarding with safety gear and expert guidance.",
-      schedule: "Tue, Thu - 2:00 PM",
-      location: "Skate Park",
-    },
-    {
-      id: 3,
-      title: "Rock Climbing Adventure",
-      category: "adventure",
-      instructor: "Alex Chen",
-      image: "/rock-climbing-class.png",
-      duration: "3 hours",
-      capacity: 8,
-      enrolled: 5,
-      rating: 5.0,
-      price: 60,
-      level: "Intermediate",
-      description:
-        "Challenge yourself with guided rock climbing sessions on our natural rock formations.",
-      schedule: "Sat, Sun - 9:00 AM",
-      location: "Rocky Ridge",
-    },
-    {
-      id: 4,
-      title: "Arts & Crafts Studio",
-      category: "creative",
-      instructor: "Emma Wilson",
-      image: "/arts-crafts-class.png",
-      duration: "2 hours",
-      capacity: 15,
-      enrolled: 12,
-      rating: 4.7,
-      price: 30,
-      level: "All Levels",
-      description:
-        "Express your creativity through various art projects and craft activities.",
-      schedule: "Daily - 1:00 PM",
-      location: "Art Studio",
-    },
-    {
-      id: 5,
-      title: "Canoeing & Kayaking",
-      category: "water",
-      instructor: "David Park",
-      image: "/canoeing-class.png",
-      duration: "2.5 hours",
-      capacity: 10,
-      enrolled: 7,
-      rating: 4.9,
-      price: 50,
-      level: "Beginner",
-      description:
-        "Explore the lake while learning proper paddling techniques and water safety.",
-      schedule: "Mon, Wed, Fri - 3:00 PM",
-      location: "Boat Dock",
-    },
-    {
-      id: 6,
-      title: "Mountain Biking",
-      category: "adventure",
-      instructor: "Lisa Thompson",
-      image: "/mountain-biking-class.png",
-      duration: "2 hours",
-      capacity: 12,
-      enrolled: 9,
-      rating: 4.8,
-      price: 40,
-      level: "Intermediate",
-      description:
-        "Navigate forest trails and improve your biking skills with professional instruction.",
-      schedule: "Tue, Thu, Sat - 4:00 PM",
-      location: "Forest Trails",
-    },
-  ];
+  const { data, loading, isError, error } = useFetch("class", getAllClass, {
+    limit: 2,
+    page: currentPage,
+  });
+  const {
+    data: categories,
+    isLoading,
+    error: err,
+  } = useFetch("category", getAllCategory);
 
-  const categories = [
-    { label: "All", value: "all" },
-    { label: "Water", value: "water" },
-    { label: "Mountain", value: "mountain" },
-    { label: "Yoga", value: "yoga" },
-    { label: "Adventure", value: "adventure" },
-    { label: "Cycling", value: "cycling" },
-  ];
+  console.log("categories", categories);
+
   const [activeCategory, setActiveCategory] = useState("all");
   console.log("activeCategory", activeCategory);
 
   const filteredClasses =
     activeCategory === "all"
-      ? data?.data?.docs
-      : data?.data?.docs?.filter(
-          (c) => c?.category == activeCategory.toLowerCase()
-        );
+      ? data?.data?.data?.docs
+      : data?.data?.data?.docs?.filter((c) => c?.categoryId == activeCategory);
   console.log("filteredClasses", filteredClasses);
   return (
     <section id="classes" className="py-20 bg-white">
@@ -158,24 +55,32 @@ export default function ClassesSection() {
             memories.
           </p>
         </div>
-
         {/* Categories Tabs */}
-        <div className="w-full mb-12 grid grid-cols-2 md:grid-cols-5 gap-2 bg-gray-100 p-1 rounded-xl select-none">
-          {categories.map((category, index) => (
+        <div className="w-full capitalize mb-12 grid grid-cols-2 md:grid-cols-5 gap-2 bg-gray-100 p-1 rounded-xl select-none">
+          <button
+            onClick={() => setActiveCategory("all")}
+            className={`font-medium py-2 rounded-xl transition-colors ${
+              activeCategory === "all"
+                ? "bg-white text-orange-600 shadow"
+                : "text-gray-700 hover:bg-white hover:text-orange-600"
+            }`}
+          >
+            All
+          </button>
+          {categories?.data?.map((category, index) => (
             <button
               key={index}
-              onClick={() => setActiveCategory(category?.value)}
-              className={`font-medium py-2 rounded-xl transition-colors ${
-                activeCategory === category?.value
+              onClick={() => setActiveCategory(category?.id)}
+              className={`font-medium py-2 rounded-xl capitalize transition-colors ${
+                activeCategory === category?.id
                   ? "bg-white text-orange-600 shadow"
                   : "text-gray-700 hover:bg-white hover:text-orange-600"
               }`}
             >
-              {category?.label}
+              {category?.name}
             </button>
           ))}
         </div>
-
         {/* Classes Grid */}
         {filteredClasses?.length === 0 ? (
           <Empty description="No Class" />
@@ -186,8 +91,13 @@ export default function ClassesSection() {
             ))}
           </div>
         )}
-
-        <CustomPagination data={data?.data} onPageChange={handlePageChange} />
+        <Pagination
+          currentPage={currentPage}
+          totalItems={data?.data?.data?.totalDocs} // মোট item সংখ্যা
+          limit={data?.data?.data?.limit}
+          onPageChange={(p) => setCurrentPage(p)}
+          pageSizeOptions={null} // চাইলে ["5","10","20"] দিতে পারো
+        />
       </div>
     </section>
   );

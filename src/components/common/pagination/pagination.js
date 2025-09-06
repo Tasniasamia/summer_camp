@@ -1,21 +1,24 @@
 "use client";
 import React from "react";
-import { Pagination } from "antd";
+import { Pagination as AntdPagination } from "antd";
 
-const CustomPagination = ({ data, onPageChange }) => {
+export default function Pagination({
+  currentPage,
+  totalItems,
+  onPageChange,
+  limit = 10,
+  pageSizeOptions=false, // null হলে dropdown দেখাবে না
+}) {
   return (
-    <div className="flex justify-center mt-6">
-      <Pagination
-        current={data?.page || 1}        // এখন কোন পেজে আছি
-        pageSize={data?.limit || 10}     // প্রতি পাতায় কয়টা item
-        total={data?.totalDocs || 0}     // মোট কতগুলো item
-        
-        onChange={(page, pageSize) => {
-          if (onPageChange) onPageChange(page, pageSize);
-        }}
+    <div className="flex justify-center mt-4">
+      <AntdPagination
+        current={currentPage}
+        pageSize={limit}
+        total={totalItems}
+        onChange={onPageChange}
+        showSizeChanger={!!pageSizeOptions} // true হলে dropdown দেখাবে
+        pageSizeOptions={pageSizeOptions ? ["10", "20", "50"] : null}
       />
     </div>
   );
-};
-
-export default CustomPagination;
+}

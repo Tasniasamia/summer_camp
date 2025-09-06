@@ -21,7 +21,7 @@ const ClassCard = ({ classItem, wishlist, enrolledClasses }) => {
     isLoading: userLoading,
     error: err,
   } = useFetch("profile", "/user");
-  const enrollClass = useMutationAction("create", "/enroll", "enrollClass");
+  // const enrollClass = useMutationAction("create", "/enroll", "enrollClass");
   console.log("user",user);
   return (
     <div className="group hover:shadow-2xl transition-all duration-300 border border-gray-100 rounded-lg shadow-sm overflow-hidden">
@@ -129,21 +129,21 @@ const ClassCard = ({ classItem, wishlist, enrolledClasses }) => {
         <div className="w-full">
           <button
             className="bg-gradient-to-r from-orange-500 to-yellow-500 font-bold text-white !cursor-pointer w-full py-3 rounded-lg transition-all duration-300"
-            onClick={async () => {
-              if (user?.data?.role === "student") {
-                const res = await enrollClass.mutateAsync({
-                  classId: classItem?.id,
-                  userId: user?.data?.id,
-                });
-                console.log("res", res);
-                if (res?.success) {
-                  window.location.href = res?.GatewayPageURL;
-                }
-              } else {
-                push("/signup");
-              }
-            }}
-            disabled={classItem?.enrollment === classItem?.sit}
+            // onClick={async () => {
+            //   if (user?.data?.role === "student") {
+            //     const res = await enrollClass.mutateAsync({
+            //       classId: classItem?.id,
+            //       userId: user?.data?.id,
+            //     });
+            //     console.log("res", res);
+            //     if (res?.success) {
+            //       window.location.href = res?.GatewayPageURL;
+            //     }
+            //   } else {
+            //     push("/signup");
+            //   }
+            // }}
+            // disabled={classItem?.enrollment === classItem?.sit}
           >
             Enroll Now
           </button>
